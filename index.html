@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -398,6 +399,7 @@ button{
   border-color:#9b45ff!important;
   color:#9b45ff!important;
 }
+
 .rotate-hint{
   display:none;
   position:absolute;
@@ -415,6 +417,15 @@ button{
   color:#fff;
   font-size:13px;
   line-height:1.7;
+
+  /* ONLY rotation behavior */
+  opacity:1;
+  transition:opacity .18s ease;
+}
+
+.rotate-hint.rotation-fade{
+  opacity:0;
+  pointer-events:none;
 }
 
 .overlay{
@@ -480,7 +491,6 @@ button{
 }
 
 @media(max-width:600px){
-
   .screen{
     padding:12px;
   }
@@ -536,7 +546,6 @@ button{
 }
 
 @media(max-height:620px) and (orientation:landscape){
-
   .game-shell{
     padding-top:5px;
   }
@@ -559,7 +568,6 @@ button{
 }
 
 @media(max-width:390px) and (orientation:portrait){
-
   .rotate-hint{
     display:block;
   }
@@ -573,7 +581,6 @@ button{
 
   <!-- MENU -->
   <section id="menuScreen" class="screen active">
-
     <div class="bg-grid"></div>
 
     <h1 class="logo">MAZE CHOMP</h1>
@@ -583,7 +590,6 @@ button{
     </div>
 
     <div class="menu">
-
       <button class="neon-btn" data-action="play">
         ▶ PLAY GAME
       </button>
@@ -603,22 +609,16 @@ button{
       <button class="neon-btn" data-action="about">
         ℹ ABOUT
       </button>
-
     </div>
   </section>
 
-
   <!-- INFO -->
   <section id="infoScreen" class="screen">
-
     <div class="panel" id="infoPanel"></div>
-
   </section>
-
 
   <!-- SETTINGS -->
   <section id="settingsScreen" class="screen">
-
     <div class="panel">
 
       <h2>⚙ SETTINGS</h2>
@@ -686,7 +686,6 @@ button{
     </div>
   </section>
 
-
   <!-- GAME -->
   <section id="gameScreen" class="screen">
 
@@ -716,7 +715,6 @@ button{
 
       </div>
 
-
       <div class="board-wrap" id="boardWrap">
 
         <canvas id="gameCanvas"></canvas>
@@ -742,22 +740,16 @@ button{
 
       </div>
 
-
       <!-- D-PAD -->
       <div class="dpad" id="dpad">
 
         <button class="up" data-dir="up">▲</button>
-
         <button class="left" data-dir="left">◀</button>
-
         <button class="center" aria-label="stop">●</button>
-
         <button class="right" data-dir="right">▶</button>
-
         <button class="down" data-dir="down">▼</button>
 
       </div>
-
 
       <!-- PAUSE -->
       <div class="overlay" id="pauseOverlay">
@@ -782,22 +774,17 @@ button{
 
       </div>
 
-
       <!-- MESSAGE -->
       <div class="overlay" id="messageOverlay">
-
         <div class="overlay-card" id="messageCard"></div>
-
       </div>
 
     </div>
-
   </section>
 
 </div>
 
 <div id="toast"></div>
-
 
 <script>
 "use strict";
@@ -808,7 +795,6 @@ button{
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d", { alpha:false });
-
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 
@@ -818,7 +804,6 @@ const screens = {
   info: $("#infoScreen"),
   settings: $("#settingsScreen")
 };
-
 
 /* =========================================================
    SETTINGS
@@ -847,7 +832,6 @@ let settings = Object.assign({},defaultSettings,savedSettings);
 let highScore =
   Number(localStorage.getItem("mazeChompHighScore") || 0);
 
-
 /* =========================================================
    GAME VARIABLES
 ========================================================= */
@@ -856,26 +840,20 @@ let score = 0;
 let level = 1;
 let lives = 3;
 let dotsCollected = 0;
-
 let gameState = "menu";
-
 let raf = 0;
 let last = 0;
-
 let lowFx = false;
-
 let audioCtx = null;
 
 const W = 28;
 const H = 31;
-
 
 /* =========================================================
    MAZE
 ========================================================= */
 
 const mazeRows = [
-
 "############################",
 "#............##............#",
 "#.####.#####.##.#####.####.#",
@@ -907,36 +885,17 @@ const mazeRows = [
 "#.####.#####.##.#####.####.#",
 "#............##............#",
 "############################"
-
 ];
-
 
 /* =========================================================
    DIRECTIONS
 ========================================================= */
 
 const DIR = {
-
-  up:{
-    x:0,
-    y:-1
-  },
-
-  down:{
-    x:0,
-    y:1
-  },
-
-  left:{
-    x:-1,
-    y:0
-  },
-
-  right:{
-    x:1,
-    y:0
-  }
-
+  up:{x:0,y:-1},
+  down:{x:0,y:1},
+  left:{x:-1,y:0},
+  right:{x:1,y:0}
 };
 
 const dirs = [
@@ -945,7 +904,6 @@ const dirs = [
   DIR.down,
   DIR.right
 ];
-
 
 /* =========================================================
    GAME OBJECTS
@@ -957,29 +915,23 @@ let oy = 0;
 
 let player;
 let ghosts = [];
-
 let dots = [];
 let pellets = [];
-
 let particles = [];
 
 let powerTimer = 0;
 let combo = 0;
-
 
 /* =========================================================
    UTILITY
 ========================================================= */
 
 function saveSettings(){
-
   localStorage.setItem(
     "mazeChompSettings",
     JSON.stringify(settings)
   );
-
 }
-
 
 function show(name){
 
@@ -990,16 +942,13 @@ function show(name){
   screens[name].classList.add("active");
 
   requestAnimationFrame(resizeCanvas);
-
 }
-
 
 function toast(message){
 
   const element = $("#toast");
 
   element.textContent = message;
-
   element.classList.add("show");
 
   clearTimeout(toast.timer);
@@ -1008,9 +957,7 @@ function toast(message){
     () => element.classList.remove("show"),
     1200
   );
-
 }
-
 
 function vibrate(ms=20){
 
@@ -1020,9 +967,7 @@ function vibrate(ms=20){
   ){
     navigator.vibrate(ms);
   }
-
 }
-
 
 /* =========================================================
    AUDIO
@@ -1046,7 +991,6 @@ function beep(
           window.AudioContext ||
           window.webkitAudioContext
         )();
-
     }
 
     if(audioCtx.state === "suspended"){
@@ -1060,13 +1004,11 @@ function beep(
       audioCtx.createGain();
 
     oscillator.type = type;
-
     oscillator.frequency.value = freq;
 
     gain.gain.value = vol;
 
     oscillator.connect(gain);
-
     gain.connect(audioCtx.destination);
 
     oscillator.start();
@@ -1081,9 +1023,7 @@ function beep(
     );
 
   }catch(e){}
-
 }
-
 
 /* =========================================================
    BUTTON FX
@@ -1101,7 +1041,6 @@ function buttonFx(event){
   );
 
   vibrate(10);
-
 }
 
 $$("button").forEach(
@@ -1112,28 +1051,27 @@ $$("button").forEach(
     )
 );
 
-
 /* =========================================================
    MAZE HELPERS
 ========================================================= */
 
 function mazeAt(x,y){
 
-  if(y < 0 || y >= H || x < 0 || x >= W){
+  if(
+    y < 0 ||
+    y >= H ||
+    x < 0 ||
+    x >= W
+  ){
     return " ";
   }
 
   return mazeRows[y][x] || " ";
-
 }
-
 
 function isWall(x,y){
-
   return mazeAt(x,y) === "#";
-
 }
-
 
 function wrapX(x){
 
@@ -1146,16 +1084,11 @@ function wrapX(x){
   }
 
   return x;
-
 }
-
 
 function canMoveTile(x,y){
-
   return !isWall(x,y);
-
 }
-
 
 /* =========================================================
    MAP
@@ -1173,31 +1106,23 @@ function resetMap(){
       const c = mazeAt(x,y);
 
       if(c === "."){
-
         dots.push({
           x,
           y,
           alive:true
         });
-
       }
 
       if(c === "*"){
-
         pellets.push({
           x,
           y,
           alive:true
         });
-
       }
-
     }
-
   }
-
 }
-
 
 /* =========================================================
    PLAYER
@@ -1206,7 +1131,6 @@ function resetMap(){
 function newPlayer(){
 
   return {
-
     x:14.5,
     y:26.5,
 
@@ -1221,13 +1145,9 @@ function newPlayer(){
     },
 
     speed:.0065,
-
     mouth:0
-
   };
-
 }
-
 
 /* =========================================================
    GHOST
@@ -1236,7 +1156,6 @@ function newPlayer(){
 function createGhost(x,y,i){
 
   return {
-
     x:x + .5,
     y:y + .5,
 
@@ -1250,15 +1169,10 @@ function createGhost(x,y,i){
     speed:.0048 + level*.00025,
 
     fright:0,
-
     scatter:false,
-
     phase:i * 1.2
-
   };
-
 }
-
 
 const ghostColors = [
   "#ff3d71",
@@ -1266,7 +1180,6 @@ const ghostColors = [
   "#ff9e2c",
   "#bd62ff"
 ];
-
 
 /* =========================================================
    ACTORS
@@ -1277,12 +1190,10 @@ function resetActors(){
   player = newPlayer();
 
   ghosts = [
-
     createGhost(13,14,0),
     createGhost(14,14,1),
     createGhost(15,14,2),
     createGhost(16,14,3)
-
   ];
 
   ghosts.forEach(
@@ -1292,9 +1203,7 @@ function resetActors(){
 
   powerTimer = 0;
   combo = 0;
-
 }
-
 
 /* =========================================================
    START
@@ -1306,18 +1215,14 @@ function startGame(){
   level = 1;
   lives = 3;
   dotsCollected = 0;
-
   gameState = "playing";
 
   resetMap();
   resetActors();
-
   particles = [];
 
   show("game");
-
   hideOverlay();
-
   updateHud();
 
   last = performance.now();
@@ -1332,9 +1237,7 @@ function startGame(){
     () => beep(550,.1),
     100
   );
-
 }
-
 
 /* =========================================================
    LEVEL RESTART
@@ -1350,9 +1253,7 @@ function restartLevel(){
   hideOverlay();
 
   last = performance.now();
-
 }
-
 
 /* =========================================================
    SCORE
@@ -1370,13 +1271,10 @@ function addScore(amount){
       "mazeChompHighScore",
       highScore
     );
-
   }
 
   updateHud();
-
 }
-
 
 /* =========================================================
    HUD
@@ -1395,9 +1293,7 @@ function updateHud(){
 
   $("#lives").textContent =
     "♥ ".repeat(Math.max(0,lives)).trim() || "—";
-
 }
-
 
 /* =========================================================
    COLLISION HELPERS
@@ -1409,9 +1305,7 @@ function isOpen(x,y){
     Math.round(x),
     Math.round(y)
   );
-
 }
-
 
 function centered(entity){
 
@@ -1422,9 +1316,7 @@ function centered(entity){
     Math.abs(entity.x-cx) < .075 &&
     Math.abs(entity.y-cy) < .075
   );
-
 }
-
 
 function snapToCenter(entity){
 
@@ -1433,9 +1325,7 @@ function snapToCenter(entity){
 
   entity.y =
     Math.floor(entity.y) + .5;
-
 }
-
 
 /* =========================================================
    MOVEMENT
@@ -1460,9 +1350,7 @@ function canTravel(entity,dir){
     Math.floor(cy + dir.y);
 
   return !isWall(tx,ty);
-
 }
-
 
 function moveEntity(entity,dt){
 
@@ -1479,7 +1367,6 @@ function moveEntity(entity,dt){
   let ny =
     entity.y + entity.dir.y * amount;
 
-
   /* horizontal */
 
   if(entity.dir.x !== 0){
@@ -1493,17 +1380,12 @@ function moveEntity(entity,dt){
       Math.floor(entity.y);
 
     if(isWall(nextTile,row)){
-
       snapToCenter(entity);
-
       return;
-
     }
 
     entity.x = nx;
-
   }
-
 
   /* vertical */
 
@@ -1518,28 +1400,19 @@ function moveEntity(entity,dt){
       Math.floor(entity.x);
 
     if(isWall(column,nextTile)){
-
       snapToCenter(entity);
-
       return;
-
     }
 
     entity.y = ny;
-
   }
-
 
   /* tunnel */
 
   if(entity === player){
-
     entity.x = wrapX(entity.x);
-
   }
-
 }
-
 
 /* =========================================================
    PLAYER TURN
@@ -1557,8 +1430,15 @@ function tryPlayerTurn(){
   if(canTravel(player,player.next)){
 
     if(
-      Math.abs(player.x - (Math.floor(player.x)+.5)) < .22 &&
-      Math.abs(player.y - (Math.floor(player.y)+.5)) < .22
+      Math.abs(
+        player.x -
+        (Math.floor(player.x)+.5)
+      ) < .22 &&
+
+      Math.abs(
+        player.y -
+        (Math.floor(player.y)+.5)
+      ) < .22
     ){
 
       snapToCenter(player);
@@ -1572,13 +1452,9 @@ function tryPlayerTurn(){
         x:0,
         y:0
       };
-
     }
-
   }
-
 }
-
 
 /* =========================================================
    PLAYER UPDATE
@@ -1587,26 +1463,21 @@ function tryPlayerTurn(){
 function updatePlayer(dt){
 
   tryPlayerTurn();
-
   moveEntity(player,dt);
 
   if(centered(player)){
 
     snapToCenter(player);
-
     tryPlayerTurn();
-
   }
 
   player.mouth += dt * .012;
-
 
   const cx =
     Math.floor(player.x);
 
   const cy =
     Math.floor(player.y);
-
 
   /* dots */
 
@@ -1619,7 +1490,6 @@ function updatePlayer(dt){
     ){
 
       dot.alive = false;
-
       dotsCollected++;
 
       addScore(10);
@@ -1636,11 +1506,8 @@ function updatePlayer(dt){
         player.y,
         3
       );
-
     }
-
   }
-
 
   /* power pellets */
 
@@ -1653,13 +1520,11 @@ function updatePlayer(dt){
     ){
 
       pellet.alive = false;
-
       dotsCollected++;
 
       addScore(50);
 
       powerTimer = 7;
-
       combo = 0;
 
       ghosts.forEach(
@@ -1680,23 +1545,16 @@ function updatePlayer(dt){
         player.y,
         14
       );
-
     }
-
   }
-
 
   if(
     !dots.some(dot=>dot.alive) &&
     !pellets.some(pellet=>pellet.alive)
   ){
-
     levelComplete();
-
   }
-
 }
-
 
 /* =========================================================
    GHOST AI
@@ -1710,60 +1568,46 @@ function chooseGhostDir(ghost){
   const y =
     Math.floor(ghost.y);
 
-
   let target;
-
 
   if(powerTimer > 0){
 
     target = {
-
       x:Math.floor(player.x) +
         (Math.random()>.5 ? 4 : -4),
 
       y:Math.floor(player.y) +
         (Math.random()>.5 ? 4 : -4)
-
     };
 
   }
-
   else if(ghost.type === 0){
 
     target = {
-
       x:Math.floor(player.x),
       y:Math.floor(player.y)
-
     };
 
   }
-
   else if(ghost.type === 1){
 
     target = {
-
       x:Math.floor(player.x) +
         player.dir.x * 4,
 
       y:Math.floor(player.y) +
         player.dir.y * 4
-
     };
 
   }
-
   else if(ghost.type === 2){
 
     target = {
-
       x:Math.floor(Math.random()*W),
       y:Math.floor(Math.random()*H)
-
     };
 
   }
-
   else{
 
     target =
@@ -1779,9 +1623,7 @@ function chooseGhostDir(ghost){
             y:Math.floor(player.y) +
               player.dir.x * 4
           };
-
   }
-
 
   let options =
     dirs.filter(dir=>{
@@ -1796,9 +1638,7 @@ function chooseGhostDir(ghost){
         x+dir.x,
         y+dir.y
       );
-
     });
-
 
   if(!options.length){
 
@@ -1810,9 +1650,7 @@ function chooseGhostDir(ghost){
             y+dir.y
           )
       );
-
   }
-
 
   options.sort((a,b)=>{
 
@@ -1827,9 +1665,7 @@ function chooseGhostDir(ghost){
     return powerTimer > 0
       ? db-da
       : da-db;
-
   });
-
 
   ghost.dir =
     options[
@@ -1838,9 +1674,7 @@ function chooseGhostDir(ghost){
         Math.min(2,options.length)
       )
     ] || options[0];
-
 }
-
 
 /* =========================================================
    GHOST UPDATE
@@ -1854,31 +1688,21 @@ function updateGhosts(dt){
       powerTimer - dt/1000
     );
 
-
   ghosts.forEach(ghost=>{
 
     if(powerTimer <= 0){
-
       ghost.fright = 0;
-
     }else{
-
       ghost.fright = powerTimer;
-
     }
-
 
     if(centered(ghost)){
 
       snapToCenter(ghost);
-
       chooseGhostDir(ghost);
-
     }
 
-
     moveEntity(ghost,dt);
-
 
     const dx =
       ghost.x-player.x;
@@ -1888,7 +1712,6 @@ function updateGhosts(dt){
 
     const distance =
       dx*dx+dy*dy;
-
 
     if(distance < .36){
 
@@ -1935,11 +1758,8 @@ function updateGhosts(dt){
       }else{
 
         playerHit();
-
       }
-
     }
-
 
     ghost.phase += dt/1000;
 
@@ -1947,11 +1767,8 @@ function updateGhosts(dt){
       Math.floor(
         ghost.phase/6
       ) % 2 === 1;
-
   });
-
 }
-
 
 /* =========================================================
    PLAYER HIT
@@ -1982,15 +1799,11 @@ function playerHit(){
     20
   );
 
-
   if(lives <= 0){
 
     gameOver();
-
     return;
-
   }
-
 
   player.x = 14.5;
   player.y = 26.5;
@@ -2005,17 +1818,15 @@ function playerHit(){
     y:0
   };
 
-
   ghosts.forEach((ghost,index)=>{
 
     ghost.x = ghost.homeX;
     ghost.y = ghost.homeY;
-    ghost.dir = dirs[index%4];
 
+    ghost.dir =
+      dirs[index%4];
   });
-
 }
-
 
 /* =========================================================
    LEVEL COMPLETE
@@ -2043,9 +1854,9 @@ function levelComplete(){
 
   vibrate(60);
 
-
   showMessage(
     "LEVEL COMPLETE",
+
     `
       BONUS +${bonus}
       <br>
@@ -2053,19 +1864,20 @@ function levelComplete(){
         Get ready for Level ${level+1}
       </small>
     `,
+
     [
       {
         t:"▶ NEXT LEVEL",
+
         fn:()=>{
+
           level++;
           restartLevel();
         }
       }
     ]
   );
-
 }
-
 
 /* =========================================================
    GAME OVER
@@ -2079,7 +1891,6 @@ function gameOver(){
     "mazeChompHighScore",
     highScore
   );
-
 
   showMessage(
     "GAME OVER",
@@ -2109,18 +1920,17 @@ function gameOver(){
 
       {
         t:"⌂ MAIN MENU",
+
         fn:()=>{
+
           hideOverlay();
           show("menu");
           gameState="menu";
         }
       }
-
     ]
   );
-
 }
-
 
 /* =========================================================
    MESSAGE
@@ -2150,7 +1960,6 @@ function showMessage(
       </div>
     `;
 
-
   buttons.forEach(button=>{
 
     const element =
@@ -2166,15 +1975,11 @@ function showMessage(
       button.fn;
 
     card.appendChild(element);
-
   });
-
 
   $("#messageOverlay")
     .classList.add("show");
-
 }
-
 
 /* =========================================================
    OVERLAY
@@ -2187,9 +1992,7 @@ function hideOverlay(){
 
   $("#pauseOverlay")
     .classList.remove("show");
-
 }
-
 
 function pause(){
 
@@ -2199,11 +2002,8 @@ function pause(){
 
     $("#pauseOverlay")
       .classList.add("show");
-
   }
-
 }
-
 
 function resume(){
 
@@ -2215,11 +2015,8 @@ function resume(){
       .classList.remove("show");
 
     last = performance.now();
-
   }
-
 }
-
 
 /* =========================================================
    PARTICLES
@@ -2239,38 +2036,28 @@ function spawn(x,y,n){
       y,
 
       vx:(Math.random()-.5)*.12,
-
       vy:(Math.random()-.5)*.12,
 
       life:.4+Math.random()*.6
-
     });
-
   }
-
 }
-
 
 function updateParticles(dt){
 
   particles.forEach(p=>{
 
     p.x += p.vx * dt;
-
     p.y += p.vy * dt;
 
     p.life -= dt/1000;
-
   });
-
 
   particles =
     particles.filter(
       p=>p.life>0
     );
-
 }
-
 
 /* =========================================================
    DRAW
@@ -2285,14 +2072,11 @@ function draw(){
     canvas.height
   );
 
-
   ctx.save();
 
   ctx.translate(ox,oy);
 
-
   const glow = !lowFx;
-
 
   /* MAZE */
 
@@ -2304,7 +2088,6 @@ function draw(){
         continue;
       }
 
-
       ctx.fillStyle =
         "#06122a";
 
@@ -2314,7 +2097,6 @@ function draw(){
         tile,
         tile
       );
-
 
       ctx.strokeStyle =
         glow
@@ -2327,7 +2109,6 @@ function draw(){
           tile*.075
         );
 
-
       ctx.shadowBlur =
         glow
           ? tile*.45
@@ -2335,7 +2116,6 @@ function draw(){
 
       ctx.shadowColor =
         "#20a7ff";
-
 
       /* TOP */
 
@@ -2354,9 +2134,7 @@ function draw(){
         );
 
         ctx.stroke();
-
       }
-
 
       /* RIGHT */
 
@@ -2375,9 +2153,7 @@ function draw(){
         );
 
         ctx.stroke();
-
       }
-
 
       /* BOTTOM */
 
@@ -2396,9 +2172,7 @@ function draw(){
         );
 
         ctx.stroke();
-
       }
-
 
       /* LEFT */
 
@@ -2417,16 +2191,11 @@ function draw(){
         );
 
         ctx.stroke();
-
       }
-
     }
-
   }
 
-
   ctx.shadowBlur=0;
-
 
   /* DOTS */
 
@@ -2456,9 +2225,7 @@ function draw(){
     );
 
     ctx.fill();
-
   });
-
 
   /* POWER PELLETS */
 
@@ -2492,14 +2259,11 @@ function draw(){
     );
 
     ctx.fill();
-
   });
-
 
   ghosts.forEach(drawGhost);
 
   drawPlayer();
-
 
   /* PARTICLES */
 
@@ -2511,7 +2275,6 @@ function draw(){
     ctx.fillStyle="#fff";
 
     ctx.shadowBlur=8;
-
     ctx.shadowColor="#9b45ff";
 
     ctx.beginPath();
@@ -2525,18 +2288,13 @@ function draw(){
     );
 
     ctx.fill();
-
   });
 
-
   ctx.globalAlpha=1;
-
   ctx.shadowBlur=0;
 
   ctx.restore();
-
 }
-
 
 /* =========================================================
    PLAYER DRAW
@@ -2553,9 +2311,7 @@ function drawPlayer(){
   const r =
     tile*.42;
 
-
   let angle = 0;
-
 
   if(player.dir.x===1){
     angle=0;
@@ -2573,7 +2329,6 @@ function drawPlayer(){
     angle=-Math.PI/2;
   }
 
-
   const mouth =
     (
       .16 +
@@ -2581,7 +2336,6 @@ function drawPlayer(){
         Math.sin(player.mouth)
       )*.22
     ) * Math.PI;
-
 
   ctx.fillStyle =
     "#ffe600";
@@ -2591,7 +2345,6 @@ function drawPlayer(){
 
   ctx.shadowColor =
     "#ffe600";
-
 
   ctx.beginPath();
 
@@ -2613,9 +2366,7 @@ function drawPlayer(){
   ctx.fill();
 
   ctx.shadowBlur=0;
-
 }
-
 
 /* =========================================================
    GHOST DRAW
@@ -2632,7 +2383,6 @@ function drawGhost(ghost){
   const r =
     tile*.4;
 
-
   const color =
     ghost.fright>0
       ? (
@@ -2644,14 +2394,12 @@ function drawGhost(ghost){
         )
       : ghost.color;
 
-
   ctx.fillStyle=color;
 
   ctx.shadowBlur =
     lowFx ? 0 : 13;
 
   ctx.shadowColor=color;
-
 
   ctx.beginPath();
 
@@ -2662,7 +2410,6 @@ function drawGhost(ghost){
     Math.PI,
     0
   );
-
 
   ctx.lineTo(
     x+r,
@@ -2695,7 +2442,6 @@ function drawGhost(ghost){
 
   ctx.shadowBlur=0;
 
-
   /* eyes */
 
   const eyeY =
@@ -2706,7 +2452,6 @@ function drawGhost(ghost){
 
   const eyeRight =
     x+r*.34;
-
 
   ctx.fillStyle="#fff";
 
@@ -2730,7 +2475,6 @@ function drawGhost(ghost){
 
   ctx.fill();
 
-
   ctx.fillStyle="#10204a";
 
   ctx.beginPath();
@@ -2752,9 +2496,7 @@ function drawGhost(ghost){
   );
 
   ctx.fill();
-
 }
-
 
 /* =========================================================
    RESPONSIVE CANVAS
@@ -2766,20 +2508,17 @@ function resizeCanvas(){
     return;
   }
 
-
   const wrap =
     $("#boardWrap");
 
   const rect =
     wrap.getBoundingClientRect();
 
-
   const maxW =
     Math.max(50,rect.width-8);
 
   const maxH =
     Math.max(80,rect.height-8);
-
 
   tile =
     Math.max(
@@ -2792,13 +2531,11 @@ function resizeCanvas(){
       )
     );
 
-
   const dpr =
     Math.min(
       window.devicePixelRatio || 1,
       2
     );
-
 
   canvas.width =
     W*tile*dpr;
@@ -2806,13 +2543,11 @@ function resizeCanvas(){
   canvas.height =
     H*tile*dpr;
 
-
   canvas.style.width =
     (W*tile)+"px";
 
   canvas.style.height =
     (H*tile)+"px";
-
 
   ctx.setTransform(
     dpr,
@@ -2823,15 +2558,11 @@ function resizeCanvas(){
     0
   );
 
-
   ox=0;
   oy=0;
 
-
   draw();
-
 }
-
 
 /* =========================================================
    MAIN LOOP
@@ -2842,11 +2573,9 @@ function loop(now){
   raf =
     requestAnimationFrame(loop);
 
-
   if(gameState !== "playing"){
     return;
   }
-
 
   let dt =
     Math.min(
@@ -2854,20 +2583,14 @@ function loop(now){
       now-last
     );
 
-
   last=now;
 
-
   updatePlayer(dt);
-
   updateGhosts(dt);
-
   updateParticles(dt);
 
   draw();
-
 }
-
 
 /* =========================================================
    INPUT
@@ -2882,12 +2605,10 @@ function requestDir(name){
     return;
   }
 
-
   player.next = {
     x:direction.x,
     y:direction.y
   };
-
 
   if(gameState === "playing"){
 
@@ -2897,18 +2618,14 @@ function requestDir(name){
       "square",
       .008
     );
-
   }
-
 }
-
 
 /* =========================================================
    SWIPE
 ========================================================= */
 
 let swipeStart = null;
-
 
 canvas.addEventListener(
   "pointerdown",
@@ -2919,25 +2636,19 @@ canvas.addEventListener(
     }
 
     swipeStart = {
-
       x:event.clientX,
       y:event.clientY,
       id:event.pointerId
-
     };
-
 
     canvas.setPointerCapture?.(
       event.pointerId
     );
 
-
     event.preventDefault();
-
   },
   {passive:false}
 );
-
 
 canvas.addEventListener(
   "pointerup",
@@ -2947,11 +2658,8 @@ canvas.addEventListener(
       !swipeStart ||
       settings.controls === "dpad"
     ){
-
       return;
-
     }
-
 
     const dx =
       event.clientX -
@@ -2961,9 +2669,7 @@ canvas.addEventListener(
       event.clientY -
       swipeStart.y;
 
-
     swipeStart=null;
-
 
     const distance =
       Math.max(
@@ -2971,11 +2677,9 @@ canvas.addEventListener(
         Math.abs(dy)
       );
 
-
     if(distance < 24){
       return;
     }
-
 
     if(
       Math.abs(dx) >
@@ -2995,16 +2699,12 @@ canvas.addEventListener(
           ? "down"
           : "up"
       );
-
     }
 
-
     event.preventDefault();
-
   },
   {passive:false}
 );
-
 
 /* =========================================================
    D-PAD
@@ -3021,11 +2721,8 @@ $$("[data-dir]").forEach(button=>{
       requestDir(
         button.dataset.dir
       );
-
     }
-
   };
-
 
   button.addEventListener(
     "pointerdown",
@@ -3033,22 +2730,18 @@ $$("[data-dir]").forEach(button=>{
     {passive:false}
   );
 
-
   button.addEventListener(
     "touchstart",
     fire,
     {passive:false}
   );
 
-
   button.addEventListener(
     "touchend",
     event=>event.preventDefault(),
     {passive:false}
   );
-
 });
-
 
 /* =========================================================
    STOP BUTTON
@@ -3071,13 +2764,10 @@ $(".center").addEventListener(
         x:0,
         y:0
       };
-
     }
-
   },
   {passive:false}
 );
-
 
 /* =========================================================
    KEYBOARD
@@ -3089,7 +2779,6 @@ window.addEventListener(
 
     const key =
       event.key.toLowerCase();
-
 
     const map = {
 
@@ -3104,9 +2793,7 @@ window.addEventListener(
 
       arrowright:"right",
       d:"right"
-
     };
-
 
     if(map[key]){
 
@@ -3117,11 +2804,8 @@ window.addEventListener(
         requestDir(
           map[key]
         );
-
       }
-
     }
-
 
     if(
       key==="p" ||
@@ -3130,23 +2814,15 @@ window.addEventListener(
 
       event.preventDefault();
 
-
       if(gameState === "playing"){
-
         pause();
-
       }
       else if(gameState === "paused"){
-
         resume();
-
       }
-
     }
-
   }
 );
-
 
 /* =========================================================
    TOUCH SCROLL PREVENTION
@@ -3163,13 +2839,10 @@ document.addEventListener(
     ){
 
       event.preventDefault();
-
     }
-
   },
   {passive:false}
 );
-
 
 /* =========================================================
    RESIZE
@@ -3179,7 +2852,6 @@ window.addEventListener(
   "resize",
   resizeCanvas
 );
-
 
 window.addEventListener(
   "orientationchange",
@@ -3191,10 +2863,10 @@ window.addEventListener(
   }
 );
 
-
 document.addEventListener(
   "fullscreenchange",
   ()=>{
+
     setTimeout(
       resizeCanvas,
       120
@@ -3202,6 +2874,81 @@ document.addEventListener(
   }
 );
 
+/* =========================================================
+   MOBILE ROTATION HINT
+   ONLY ADDED FOR THE REQUESTED ROTATION BEHAVIOR
+========================================================= */
+
+function updateRotationHint(){
+
+  const hint =
+    $(".rotate-hint");
+
+  if(!hint){
+    return;
+  }
+
+  const isPortrait =
+    window.matchMedia(
+      "(orientation: portrait)"
+    ).matches;
+
+  if(isPortrait){
+
+    hint.style.display = "block";
+
+    requestAnimationFrame(()=>{
+      hint.classList.remove("rotation-fade");
+    });
+
+  }else{
+
+    hint.classList.add("rotation-fade");
+
+    setTimeout(()=>{
+
+      if(
+        !window.matchMedia(
+          "(orientation: portrait)"
+        ).matches
+      ){
+
+        hint.style.display = "none";
+      }
+
+    },180);
+  }
+
+  resizeCanvas();
+}
+
+window.addEventListener(
+  "orientationchange",
+  ()=>{
+    updateRotationHint();
+
+    setTimeout(
+      updateRotationHint,
+      50
+    );
+
+    setTimeout(
+      resizeCanvas,
+      120
+    );
+  }
+);
+
+window.addEventListener(
+  "resize",
+  ()=>{
+    if(
+      screens.game.classList.contains("active")
+    ){
+      updateRotationHint();
+    }
+  }
+);
 
 /* =========================================================
    FULLSCREEN
@@ -3212,7 +2959,6 @@ async function fullscreen(){
   const element =
     document.documentElement;
 
-
   try{
 
     if(document.fullscreenElement){
@@ -3222,7 +2968,6 @@ async function fullscreen(){
     }else{
 
       await element.requestFullscreen();
-
     }
 
   }catch(error){
@@ -3230,11 +2975,8 @@ async function fullscreen(){
     toast(
       "Fullscreen is not available here"
     );
-
   }
-
 }
-
 
 /* =========================================================
    INFO / MENU ACTIONS
@@ -3298,15 +3040,11 @@ function showHowToPlay(){
     >
       ⌂ MAIN MENU
     </button>
-
   `;
 
   show("info");
-
   bindDynamic();
-
 }
-
 
 function showScores(){
 
@@ -3335,15 +3073,11 @@ function showScores(){
     >
       ⌂ MAIN MENU
     </button>
-
   `;
 
   show("info");
-
   bindDynamic();
-
 }
-
 
 function showAbout(){
 
@@ -3373,15 +3107,11 @@ function showAbout(){
     >
       ⌂ MAIN MENU
     </button>
-
   `;
 
   show("info");
-
   bindDynamic();
-
 }
-
 
 /* =========================================================
    ACTION BINDING
@@ -3399,11 +3129,8 @@ function bindActions(){
         );
       }
     );
-
   });
-
 }
-
 
 function bindDynamic(){
 
@@ -3411,97 +3138,64 @@ function bindDynamic(){
     .forEach(button=>{
 
       button.onclick = ()=>{
+
         handleAction(
           button.dataset.action
         );
       };
-
     });
-
 }
-
 
 function handleAction(action){
 
   if(action==="play"){
-
     startGame();
-
   }
-
 
   if(action==="how"){
-
     showHowToPlay();
-
   }
-
 
   if(action==="scores"){
-
     showScores();
-
   }
-
 
   if(action==="settings"){
 
     refreshSettings();
-
     show("settings");
-
   }
-
 
   if(action==="about"){
-
     showAbout();
-
   }
-
 
   if(action==="menu"){
 
     hideOverlay();
-
     show("menu");
 
     gameState="menu";
 
     cancelAnimationFrame(raf);
-
   }
-
 
   if(action==="pause"){
-
     pause();
-
   }
-
 
   if(action==="resume"){
-
     resume();
-
   }
-
 
   if(action==="restart"){
-
     startGame();
-
   }
-
 
   if(action==="fullscreen"){
-
     fullscreen();
-
   }
-
 }
-
 
 /* =========================================================
    SETTINGS
@@ -3516,17 +3210,15 @@ function refreshSettings(){
 
     button.classList.toggle(
       "on",
+
       String(
         settings[
           button.dataset.setting
         ]
       ) === value
     );
-
   });
-
 }
-
 
 $$("[data-setting]").forEach(button=>{
 
@@ -3540,7 +3232,6 @@ $$("[data-setting]").forEach(button=>{
       const value =
         button.dataset.value;
 
-
       settings[key] =
         value === "true"
           ? true
@@ -3548,11 +3239,9 @@ $$("[data-setting]").forEach(button=>{
             ? false
             : value;
 
-
       saveSettings();
 
       refreshSettings();
-
 
       if(
         key==="fullscreen" &&
@@ -3560,9 +3249,7 @@ $$("[data-setting]").forEach(button=>{
       ){
 
         fullscreen();
-
       }
-
 
       if(key==="controls"){
 
@@ -3570,33 +3257,25 @@ $$("[data-setting]").forEach(button=>{
           "Controls: " +
           settings.controls.toUpperCase()
         );
-
       }
-
 
       if(key==="vibration"){
 
         vibrate(20);
-
       }
-
     }
   );
-
 });
-
 
 /* =========================================================
    INITIALIZE
 ========================================================= */
 
 bindActions();
-
 refreshSettings();
-
 updateHud();
-
 </script>
 
 </body>
 </html>
+```
