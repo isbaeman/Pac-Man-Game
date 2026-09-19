@@ -744,7 +744,6 @@ button{
 
         <button class="up" data-dir="up">▲</button>
         <button class="left" data-dir="left">◀</button>
-        <button class="center" aria-label="stop">●</button>
         <button class="right" data-dir="right">▶</button>
         <button class="down" data-dir="down">▼</button>
 
@@ -844,6 +843,8 @@ let raf = 0;
 let last = 0;
 let lowFx = false;
 let audioCtx = null;
+let rotationHintTimer = null;
+let rotationHintActive = false;
 
 const W = 28;
 const H = 31;
@@ -1223,6 +1224,23 @@ function startGame(){
   show("game");
   hideOverlay();
   updateHud();
+
+  clearTimeout(rotationHintTimer);
+  rotationHintActive = true;
+  updateRotationHint();
+  rotationHintTimer = setTimeout(()=>{
+    rotationHintActive = false;
+
+    const hint = $(".rotate-hint");
+
+    if(hint){
+      hint.classList.add("rotation-fade");
+
+      setTimeout(()=>{
+        hint.style.display = "none";
+      },180);
+    }
+  },5000);
 
   last = performance.now();
 
@@ -2892,7 +2910,12 @@ function updateRotationHint(){
       "(orientation: portrait)"
     ).matches;
 
-  if(isPortrait){
+  const isMobile =
+    window.matchMedia(
+      "(max-width:390px)"
+    ).matches;
+
+  if(rotationHintActive && isMobile && isPortrait){
 
     hint.style.display = "block";
 
@@ -2905,16 +2928,7 @@ function updateRotationHint(){
     hint.classList.add("rotation-fade");
 
     setTimeout(()=>{
-
-      if(
-        !window.matchMedia(
-          "(orientation: portrait)"
-        ).matches
-      ){
-
-        hint.style.display = "none";
-      }
-
+      hint.style.display = "none";
     },180);
   }
 
@@ -2924,12 +2938,14 @@ function updateRotationHint(){
 window.addEventListener(
   "orientationchange",
   ()=>{
-    updateRotationHint();
+    if(rotationHintActive){
+      updateRotationHint();
 
-    setTimeout(
-      updateRotationHint,
-      50
-    );
+      setTimeout(
+        updateRotationHint,
+        50
+      );
+    }
 
     setTimeout(
       resizeCanvas,
@@ -2944,7 +2960,11 @@ window.addEventListener(
     if(
       screens.game.classList.contains("active")
     ){
-      updateRotationHint();
+      if(rotationHintActive){
+        updateRotationHint();
+      }else{
+        resizeCanvas();
+      }
     }
   }
 );
